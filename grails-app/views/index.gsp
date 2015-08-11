@@ -7,14 +7,14 @@
 		<span>Lista de Tarefas</span>
 	</header>
 	<meta name="layout" content="main">
-
-	<link rel="stylesheet" type="text/css" href="${resource(dir: 'css', file: 'tasks.css')}" media="screen">
-	<script src="/tasks/js/jquery-2.1.4.min.js"></script>
-	<script src= "/tasks/js/jquery.tmpl.min.js"></script>
-	<script src= "/tasks/js/date.js"></script>
-	<script src= "/tasks/js/jquery.validate.js"></script>
-	<script src= "/tasks/js/tasks-controller.js"></script>
-	<script src= "/tasks/js/tasksBD.js"></script>
+	
+	<asset:stylesheet src="tasks.css"/>
+	<asset:javascript src="jquery-2.1.4.min.js"/>
+	<asset:javascript src="jquery.tmpl.min.js"/>
+	<asset:javascript src="jquery.validate.js"/>
+	<asset:javascript src="date.js"/>
+	<asset:javascript src="tasks-controller.js"/>
+	<asset:javascript src="tasksBD.js"/>
 
 	<title>Tarefas</title>
 	<g:set var="entityName" value="${message(code: 'task.label', default: 'Task')}" />
