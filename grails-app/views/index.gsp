@@ -1,122 +1,97 @@
+<%@ page import="tasks.Task" %>
 <!DOCTYPE html>
-<html>
-	<head>
-		<meta name="layout" content="main"/>
-		<title>Welcome to Grails</title>
-		<style type="text/css" media="screen">
-			#status {
-				background-color: #eee;
-				border: .2em solid #fff;
-				margin: 2em 2em 1em;
-				padding: 1em;
-				width: 12em;
-				float: left;
-				-moz-box-shadow: 0px 0px 1.25em #ccc;
-				-webkit-box-shadow: 0px 0px 1.25em #ccc;
-				box-shadow: 0px 0px 1.25em #ccc;
-				-moz-border-radius: 0.6em;
-				-webkit-border-radius: 0.6em;
-				border-radius: 0.6em;
-			}
+<html lang="en">
+<head>
+<meta charset="utf-8">
+	<header>
+		<span>Lista de Tarefas</span>
+	</header>
+	<meta name="layout" content="main">
 
-			.ie6 #status {
-				display: inline; /* float double margin fix http://www.positioniseverything.net/explorer/doubled-margin.html */
-			}
+	<link rel="stylesheet" type="text/css" href="${resource(dir: 'css', file: 'tasks.css')}" media="screen">
+	<script src="/tasks/js/jquery-2.1.4.min.js"></script>
+	<script src= "/tasks/js/jquery.tmpl.min.js"></script>
+	<script src= "/tasks/js/date.js"></script>
+	<script src= "/tasks/js/jquery.validate.js"></script>
+	<script src= "/tasks/js/tasks-controller.js"></script>
+	<script src= "/tasks/js/tasksBD.js"></script>
 
-			#status ul {
-				font-size: 0.9em;
-				list-style-type: none;
-				margin-bottom: 0.6em;
-				padding: 0;
-			}
+	<title>Tarefas</title>
+	<g:set var="entityName" value="${message(code: 'task.label', default: 'Task')}" />
+	<title><g:message code="default.list.label" args="[entityName]" /></title>
+</head>
+<body>
+	<main id="taskPage">
+		<section id="taskCreation" class="not">
+			<form id="taskForm">
+				<input type="hidden" name="id" />
+				<input type="hidden" name="complete">
+				<div>
+					<label>Tarefa</label> 
+					<input type="text" required="required" name="task" maxlength="200" class="large" placeholder="Estudar e programar" />
+				</div>
+				<div>
+					<label>Finalizar até</label> <input type="date" required="required" name="requiredBy" />
+				</div>
+				<div>
+					<label>Categoria</label> 
+					<g:select id="categoria" name="categoria" from="${tasks.Categoria.list()}" optionKey="id" required="" value="${taskInstance?.categoria?.id}" class="many-to-one"/>
+				</div>
+				<nav>
+					<a href="#" id="saveTask">Salvar tarefa</a> <a href="#" id="clearTask">Limpar tarefa</a>
+				</nav>
+			</form>
+		</section>
+		<section>
+			<table id="tblTasks">
+					<colgroup>
+						<col width="40%">
+						<col width="15%">
+						<col width="15%">
+						<col width="30%">
+					</colgroup>
+				<thead>
+					<tr>
+						<th>Nome</th>
+						<th>Deadline</th>
+						<th>Categoria</th>
+						<th>Ações</th>
+					</tr>
+				</thead>
+				<tbody>
+				</tbody>
+			</table>
+			<nav class="bottom">
+				<a href="#" id="btnAddTask">Adicionar tarefa</a>
+				<g:link controller="categoria" action="index">Categorias</g:link>
+				<g:link controller="task" action="index">Tarefas</g:link>
+			</nav>
+		</section>
+	</main>
+	<footer>Você tem <span id="taskCount"></span> tarefa(s) pendente(s)</footer>
+     
+<script id="taskRow" type="text/x-jQuery-tmpl">
+<tr row-task-id="{{= id }}">
+	<td>{{= task }}</td>
+	<td><time datetime="{{= requiredBy }}"> {{= requiredBy }}</time></td>
+	<td>{{= categoria_nome }}</td>
+	<td>
+		<nav>
+			<a href="#" class="editRow" data-task-id="{{= id }}">Editar</a>
+			<a href="#" class="completeRow" data-task-id="{{= id }}">Completar</a>
+			<a href="#" class="deleteRow" data-task-id="{{= id }}">Deletar</a>
+		</nav>
+	</td>
+</tr>
+</script>
 
-			#status li {
-				line-height: 1.3;
-			}
+<script>
+	$(document).ready(function() {
+		tasksController.init($('#taskPage'));
+	});
+</script>
 
-			#status h1 {
-				text-transform: uppercase;
-				font-size: 1.1em;
-				margin: 0 0 0.3em;
-			}
 
-			#page-body {
-				margin: 2em 1em 1.25em 18em;
-			}
+</body>
 
-			h2 {
-				margin-top: 1em;
-				margin-bottom: 0.3em;
-				font-size: 1em;
-			}
-
-			p {
-				line-height: 1.5;
-				margin: 0.25em 0;
-			}
-
-			#controller-list ul {
-				list-style-position: inside;
-			}
-
-			#controller-list li {
-				line-height: 1.3;
-				list-style-position: inside;
-				margin: 0.25em 0;
-			}
-
-			@media screen and (max-width: 480px) {
-				#status {
-					display: none;
-				}
-
-				#page-body {
-					margin: 0 1em 1em;
-				}
-
-				#page-body h1 {
-					margin-top: 0;
-				}
-			}
-		</style>
-	</head>
-	<body>
-		<a href="#page-body" class="skip"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
-		<div id="status" role="complementary">
-			<h1>Application Status</h1>
-			<ul>
-				<li>App version: <g:meta name="app.version"/></li>
-				<li>Grails version: <g:meta name="app.grails.version"/></li>
-				<li>Groovy version: ${GroovySystem.getVersion()}</li>
-				<li>JVM version: ${System.getProperty('java.version')}</li>
-				<li>Reloading active: ${grails.util.Environment.reloadingAgentEnabled}</li>
-				<li>Controllers: ${grailsApplication.controllerClasses.size()}</li>
-				<li>Domains: ${grailsApplication.domainClasses.size()}</li>
-				<li>Services: ${grailsApplication.serviceClasses.size()}</li>
-				<li>Tag Libraries: ${grailsApplication.tagLibClasses.size()}</li>
-			</ul>
-			<h1>Installed Plugins</h1>
-			<ul>
-				<g:each var="plugin" in="${applicationContext.getBean('pluginManager').allPlugins}">
-					<li>${plugin.name} - ${plugin.version}</li>
-				</g:each>
-			</ul>
-		</div>
-		<div id="page-body" role="main">
-			<h1>Welcome to Grails</h1>
-			<p>Congratulations, you have successfully started your first Grails application! At the moment
-			   this is the default page, feel free to modify it to either redirect to a controller or display whatever
-			   content you may choose. Below is a list of controllers that are currently deployed in this application,
-			   click on each to execute its default action:</p>
-
-			<div id="controller-list" role="navigation">
-				<h2>Available Controllers:</h2>
-				<ul>
-					<g:each var="c" in="${grailsApplication.controllerClasses.sort { it.fullName } }">
-						<li class="controller"><g:link controller="${c.logicalPropertyName}">${c.fullName}</g:link></li>
-					</g:each>
-				</ul>
-			</div>
-		</div>
-	</body>
 </html>
