@@ -1,7 +1,7 @@
 if ($(location).attr('hostname') == "localhost"){
 	window.urlPath = "http://" + $(location).attr('host') + "/tasks/";
 } else {
-	window.urlPath = "http://" + $(location).attr('host') + "/";
+	window.urlPath = "https://" + $(location).attr('host') + "/";
 }
 
 (function($) {
